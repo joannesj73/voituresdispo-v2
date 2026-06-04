@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import voitures from '../data/voitures.json';
@@ -6,6 +6,7 @@ import { Voiture } from '../types/voiture';
 
 interface CatalogueProps {
   searchValue: string;
+  onClearSearch: () => void;
 }
 
 const ALL_CARS = voitures as Voiture[];
@@ -89,7 +90,7 @@ const COUNTRY_CODES = [
   { name: 'Niger', code: 'NE', prefix: '+227' },
 ];
 
-function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
+function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: { searchQuery: string; onReturnToCatalogue: () => void }) {
   const [fields, setFields] = useState<FormFields>({
     nom: '',
     telephone: '',
@@ -99,16 +100,6 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    if (!submitted) return;
-    const timer = setTimeout(() => {
-      setSubmitted(false);
-      setFields({ nom: '', telephone: '', countryCode: 'BJ', vehicule: searchQuery, budget: '' });
-      setErrors({});
-    }, 3500);
-    return () => clearTimeout(timer);
-  }, [submitted, searchQuery]);
 
   const handleChange = (field: keyof FormFields, value: string) => {
     setFields(prev => ({ ...prev, [field]: value }));
@@ -237,6 +228,13 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
         >
           Merci {prenom}. Nous reviendrons vers vous dès que nous aurons trouvé votre véhicule.
         </p>
+        <button
+          onClick={onReturnToCatalogue}
+          className="w-full max-w-md bg-vd-black text-white font-jost font-light uppercase py-4 mt-8 transition-colors duration-200 hover:bg-gray-800"
+          style={{ fontSize: '12px', letterSpacing: '0.15em' }}
+        >
+          RETOUR AU CATALOGUE
+        </button>
       </div>
     );
   }
@@ -384,7 +382,7 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
 
 // --- Main Catalogue ---
 
-export default function Catalogue({ searchValue }: CatalogueProps) {
+export default function Catalogue({ searchValue, onClearSearch }: CatalogueProps) {
   const filteredCars = useMemo(() => {
     if (!searchValue.trim()) return ALL_CARS;
     return ALL_CARS.filter(car => matchesCar(car, searchValue));
@@ -438,7 +436,7 @@ export default function Catalogue({ searchValue }: CatalogueProps) {
       {/* Grid or Zero state */}
       {hasQuery && !hasResults ? (
         <section className="w-full bg-white px-5 md:px-8 lg:px-12">
-          <VehicleRequestForm searchQuery={searchValue} />
+          <VehicleRequestForm searchQuery={searchValue} onReturnToCatalogue={onClearSearch} />
         </section>
       ) : (
         <section className="w-full bg-white px-5 md:px-8 lg:px-12 py-12 md:py-16 lg:py-20">

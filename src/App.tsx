@@ -17,7 +17,7 @@ function AppShell() {
       <Navbar searchValue={searchValue} onSearchChange={setSearchValue} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/catalogue" element={<Catalogue searchValue={isCatalogue ? searchValue : ''} />} />
+        <Route path="/catalogue" element={<Catalogue searchValue={isCatalogue ? searchValue : ''} onClearSearch={() => setSearchValue('')} />} />
         <Route path="/voitures/:id" element={<VoitureDetail />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
