@@ -209,12 +209,6 @@ function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: { searchQuery:
   if (submitted) {
     return (
       <div className="flex flex-col items-center text-center py-16">
-        <p
-          className="font-jost font-light text-vd-caption uppercase"
-          style={{ fontSize: '10px', letterSpacing: '0.25em' }}
-        >
-          CONFIRMATION
-        </p>
         <h2
           className="font-cormorant font-light text-vd-text mt-6"
           style={{ fontSize: 'clamp(28px, 5vw, 44px)', letterSpacing: '0.01em' }}
