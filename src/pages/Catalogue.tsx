@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 import voitures from '../data/voitures.json';
 import { Voiture } from '../types/voiture';
 
@@ -64,6 +65,7 @@ const formatPrice = (price: number) =>
 interface FormFields {
   nom: string;
   telephone: string;
+  countryCode: string;
   vehicule: string;
   budget: string;
 }
@@ -74,10 +76,24 @@ interface FormErrors {
   vehicule?: string;
 }
 
+const COUNTRY_CODES = [
+  { name: 'Benin', code: 'BJ', prefix: '+229' },
+  { name: 'Côte d\'Ivoire', code: 'CI', prefix: '+225' },
+  { name: 'Togo', code: 'TG', prefix: '+228' },
+  { name: 'Ghana', code: 'GH', prefix: '+233' },
+  { name: 'Cameroon', code: 'CM', prefix: '+237' },
+  { name: 'Nigeria', code: 'NG', prefix: '+234' },
+  { name: 'Senegal', code: 'SN', prefix: '+221' },
+  { name: 'Mali', code: 'ML', prefix: '+223' },
+  { name: 'Burkina Faso', code: 'BF', prefix: '+226' },
+  { name: 'Niger', code: 'NE', prefix: '+227' },
+];
+
 function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
   const [fields, setFields] = useState<FormFields>({
     nom: '',
     telephone: '',
+    countryCode: 'BJ',
     vehicule: searchQuery,
     budget: '',
   });
@@ -88,7 +104,7 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
     if (!submitted) return;
     const timer = setTimeout(() => {
       setSubmitted(false);
-      setFields({ nom: '', telephone: '', vehicule: searchQuery, budget: '' });
+      setFields({ nom: '', telephone: '', countryCode: 'BJ', vehicule: searchQuery, budget: '' });
       setErrors({});
     }, 3500);
     return () => clearTimeout(timer);
@@ -101,6 +117,33 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
     }
   };
 
+  const validatePhoneNumber = (phone: string, countryCode: string): boolean => {
+    if (!phone.trim()) return false;
+
+    const country = COUNTRY_CODES.find(c => c.code === countryCode);
+    if (!country) return false;
+
+    // Build full phone number with country prefix
+    let fullNumber = phone.trim();
+    if (!fullNumber.startsWith('+')) {
+      fullNumber = country.prefix + fullNumber;
+    }
+
+    // Special validation for Benin (both old and new formats)
+    if (countryCode === 'BJ') {
+      const cleaned = fullNumber.replace(/\D/g, '');
+      // Old format: 22991007235 (11 digits)
+      // New format: 2290191007235 (13 digits)
+      if (!/^22991\d{7}$/.test(cleaned) && !/^229019\d{7}$/.test(cleaned)) {
+        return false;
+      }
+      return true;
+    }
+
+    // For other countries, use libphonenumber-js validation
+    return isValidPhoneNumber(fullNumber, countryCode as any);
+  };
+
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -111,10 +154,10 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
       newErrors.nom = 'Veuillez entrer un nom valide.';
     }
 
-    // Téléphone: required and must be numeric (with allowed chars)
+    // Téléphone: required and must be valid
     if (!fields.telephone.trim()) {
       newErrors.telephone = 'Ce champ est obligatoire.';
-    } else if (!/^[\d\s\-\+\(\)]+$/.test(fields.telephone.trim())) {
+    } else if (!validatePhoneNumber(fields.telephone, fields.countryCode)) {
       newErrors.telephone = 'Veuillez entrer un numéro valide.';
     }
 
@@ -147,7 +190,7 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
     const text =
       `*🚗 Nouvelle demande de véhicule*\n\n` +
       `*Nom :* ${fields.nom}\n` +
-      `*Téléphone :* ${fields.telephone}\n` +
+      `*Téléphone :* ${COUNTRY_CODES.find(c => c.code === fields.countryCode)?.prefix}${fields.telephone}\n` +
       `*Véhicule recherché :* ${fields.vehicule}\n` +
       `*Budget :* ${budget}\n\n` +
       `*Statut :* En attente ⏳\n` +
@@ -243,7 +286,7 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
           )}
         </div>
 
-        {/* Numéro de téléphone */}
+        {/* Numéro de téléphone avec sélecteur de pays */}
         <div className="flex flex-col gap-1">
           <label
             className="font-jost font-light text-vd-meta uppercase"
@@ -251,13 +294,28 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
           >
             Numéro de téléphone <span className="text-vd-text">*</span>
           </label>
-          <input
-            type="tel"
-            value={fields.telephone}
-            onChange={e => handleChange('telephone', e.target.value)}
-            className="w-full border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 focus:outline-none focus:border-vd-text transition-colors duration-200"
-            style={{ fontSize: '14px' }}
-          />
+          <div className="flex gap-3">
+            <select
+              value={fields.countryCode}
+              onChange={e => handleChange('countryCode', e.target.value)}
+              className="flex-shrink-0 border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 focus:outline-none focus:border-vd-text transition-colors duration-200"
+              style={{ fontSize: '14px', minWidth: '100px' }}
+            >
+              {COUNTRY_CODES.map(country => (
+                <option key={country.code} value={country.code}>
+                  {country.prefix}
+                </option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              value={fields.telephone}
+              onChange={e => handleChange('telephone', e.target.value)}
+              placeholder="Votre numéro"
+              className="flex-1 border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 focus:outline-none focus:border-vd-text transition-colors duration-200"
+              style={{ fontSize: '14px' }}
+            />
+          </div>
           {errors.telephone && (
             <p className="font-jost font-light text-vd-caption" style={{ fontSize: '11px' }}>
               {errors.telephone}
