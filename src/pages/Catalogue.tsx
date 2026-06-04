@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import voitures from '../data/voitures.json';
 import { Voiture } from '../types/voiture';
@@ -18,6 +18,11 @@ function matchesCar(car: Voiture, query: string): boolean {
   if (fourDigitNums.length === 2) {
     const [a, b] = fourDigitNums.sort((x, y) => x - y);
     return car.year >= a && car.year <= b;
+  }
+
+  // Detect single year: one 4-digit number
+  if (fourDigitNums.length === 1) {
+    return car.year === fourDigitNums[0];
   }
 
   return words.every(word => {
@@ -79,6 +84,16 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    if (!submitted) return;
+    const timer = setTimeout(() => {
+      setSubmitted(false);
+      setFields({ nom: '', telephone: '', vehicule: searchQuery, budget: '' });
+      setErrors({});
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [submitted, searchQuery]);
+
   const handleChange = (field: keyof FormFields, value: string) => {
     setFields(prev => ({ ...prev, [field]: value }));
     if (errors[field as keyof FormErrors]) {
@@ -88,9 +103,26 @@ function VehicleRequestForm({ searchQuery }: { searchQuery: string }) {
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!fields.nom.trim()) newErrors.nom = 'Ce champ est obligatoire.';
-    if (!fields.telephone.trim()) newErrors.telephone = 'Ce champ est obligatoire.';
-    if (!fields.vehicule.trim()) newErrors.vehicule = 'Ce champ est obligatoire.';
+
+    // Nom: required and must not be purely numeric
+    if (!fields.nom.trim()) {
+      newErrors.nom = 'Ce champ est obligatoire.';
+    } else if (/^\d+$/.test(fields.nom.trim())) {
+      newErrors.nom = 'Veuillez entrer un nom valide.';
+    }
+
+    // Téléphone: required and must be numeric (with allowed chars)
+    if (!fields.telephone.trim()) {
+      newErrors.telephone = 'Ce champ est obligatoire.';
+    } else if (!/^[\d\s\-\+\(\)]+$/.test(fields.telephone.trim())) {
+      newErrors.telephone = 'Veuillez entrer un numéro valide.';
+    }
+
+    // Véhicule: required
+    if (!fields.vehicule.trim()) {
+      newErrors.vehicule = 'Ce champ est obligatoire.';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
