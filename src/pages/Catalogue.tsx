@@ -241,24 +241,18 @@ function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: { searchQuery:
 
   return (
     <div className="flex flex-col items-center text-center py-16 px-5 md:px-8">
-      <p
-        className="font-jost font-light text-vd-caption uppercase"
-        style={{ fontSize: '10px', letterSpacing: '0.25em' }}
-      >
-        DEMANDE DE VÉHICULE
-      </p>
-      <h2
+      <h1
         className="font-cormorant font-light text-vd-text mt-6"
-        style={{ fontSize: 'clamp(28px, 5vw, 44px)', letterSpacing: '0.01em' }}
+        style={{ fontSize: 'clamp(30px, 7vw, 46px)', letterSpacing: '0.01em' }}
       >
         Nous n'avons pas ce véhicule actuellement.
-      </h2>
+      </h1>
       <div className="h-px bg-vd-border mt-6" style={{ width: '60px' }} />
       <p
         className="font-jost font-light text-vd-meta mt-6 max-w-md"
         style={{ fontSize: '14px', lineHeight: '1.8' }}
       >
-        Laissez-nous vos coordonnées et nous vous contacterons dès que nous aurons des propositions.
+        Veuillez bien nous laissez vos coordonnées et nous vous contacterons dès que nous aurons des propositions.
       </p>
 
       <div className="w-full max-w-md mt-10 text-left flex flex-col gap-5">
