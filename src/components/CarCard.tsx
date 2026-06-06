@@ -1,17 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Voiture } from '../types/voiture';
+import { formatPrice } from '../utils/formatPrice';
 
 interface CarCardProps {
   car: Voiture;
 }
-
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'XOF',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
 
 export function CarCard({ car }: CarCardProps) {
   const isSold = car.status === 'sold';

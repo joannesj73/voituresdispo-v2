@@ -56,7 +56,7 @@ export default function Navbar({ searchValue, onSearchChange }: NavbarProps) {
                 placeholder="Rechercher par marque, modèle, année, carburant..."
                 value={searchValue}
                 onChange={e => onSearchChange(e.target.value)}
-                className="w-full pl-10 pr-9 py-2 rounded-full font-jost font-light text-sm text-white placeholder-vd-caption focus:outline-none transition-colors duration-200 bg-[#1A1A1A]"
+                className="w-full pl-10 pr-9 py-2 rounded-full font-jost font-light text-sm text-white placeholder-vd-caption focus:outline-none transition-colors duration-200 bg-vd-dark-2"
               />
               {searchValue && (
                 <button
@@ -87,7 +87,7 @@ export default function Navbar({ searchValue, onSearchChange }: NavbarProps) {
           mobileSearchOpen ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-5 py-3 flex items-center gap-3 bg-[#1A1A1A]">
+        <div className="px-5 py-3 flex items-center gap-3 bg-vd-dark-2">
           <Search size={14} className="text-vd-caption flex-shrink-0" />
           <input
             ref={mobileInputRef}
