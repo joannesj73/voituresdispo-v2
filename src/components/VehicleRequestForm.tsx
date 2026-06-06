@@ -86,9 +86,9 @@ export function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: Vehicle
   };
 
   const sendTelegramMessage = async () => {
-    const BOT_TOKEN = '8430813523:AAF0vfGTVhxhLVyiCEu4nSnCdgK8LPPXl_0';
-    const CHAT_ID = '-1002927999837';
-    const MESSAGE_THREAD_ID = 851;
+    const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN as string;
+    const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID as string;
+    const MESSAGE_THREAD_ID = Number(import.meta.env.VITE_TELEGRAM_THREAD_ID);
 
     const now = new Date();
     const pad = (n: number) => String(n).padStart(2, '0');

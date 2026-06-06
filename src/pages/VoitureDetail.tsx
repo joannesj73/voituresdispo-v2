@@ -5,15 +5,7 @@ import { Voiture } from '../types/voiture';
 import Toast from '../components/Toast';
 import { PriceRow } from '../components/PriceRow';
 import { SpecCell } from '../components/SpecCell';
-
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'XOF',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-};
+import { formatPrice } from '../utils/formatPrice';
 
 export default function VoitureDetail() {
   const { id } = useParams<{ id: string }>();
@@ -41,7 +33,7 @@ export default function VoitureDetail() {
   const totalPrice = car.ownerAskingPrice + car.serviceFee;
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '2290191007235';
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER as string;
     const message = `Bonjour, je suis intéressé(e) par le ${car.year} ${car.make} ${car.model} ${car.licencePlateLetters} disponible sur Voitures Dispo.\n\nVoici le lien vers le véhicule : ${window.location.href}`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
