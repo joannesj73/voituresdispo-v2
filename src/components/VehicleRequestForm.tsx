@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { isValidPhoneNumber } from 'libphonenumber-js';
 import { findCountryByCode } from '../data/countries';
 import { CountrySelector } from './CountrySelector';
+import { validatePhoneNumber } from '../utils/validatePhone';
 
 interface FormFields {
   nom: string;
@@ -38,28 +38,6 @@ export function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: Vehicle
     if (errors[field as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
-  };
-
-  const validatePhoneNumber = (phone: string, countryCode: string): boolean => {
-    if (!phone.trim()) return false;
-
-    const country = findCountryByCode(countryCode);
-    if (!country) return false;
-
-    let fullNumber = phone.trim();
-    if (!fullNumber.startsWith('+')) {
-      fullNumber = country.callingCode + fullNumber;
-    }
-
-    if (countryCode === 'BJ') {
-      const cleaned = fullNumber.replace(/\D/g, '');
-      if (!/^22991\d{7}$/.test(cleaned) && !/^229019\d{7}$/.test(cleaned)) {
-        return false;
-      }
-      return true;
-    }
-
-    return isValidPhoneNumber(fullNumber, countryCode as any);
   };
 
   const validate = (): boolean => {
@@ -160,7 +138,7 @@ export function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: Vehicle
 
       <div className="w-full max-w-md mt-10 text-left flex flex-col gap-5">
         <div className="flex flex-col gap-1">
-          <label className="font-jost font-light text-vd-meta uppercase text-[10px] tracking-widest">
+          <label className="font-jost font-light text-vd-meta uppercase text-label tracking-widest">
             Prénom et nom <span className="text-vd-text">*</span>
           </label>
           <input
@@ -170,14 +148,14 @@ export function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: Vehicle
             className="w-full border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 text-sm focus:outline-none focus:border-vd-text transition-colors duration-200"
           />
           {errors.nom && (
-            <p className="font-jost font-light text-vd-caption text-[11px]">
+            <p className="font-jost font-light text-vd-caption text-cta">
               {errors.nom}
             </p>
           )}
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="font-jost font-light text-vd-meta uppercase text-[10px] tracking-widest">
+          <label className="font-jost font-light text-vd-meta uppercase text-label tracking-widest">
             Numéro de téléphone <span className="text-vd-text">*</span>
           </label>
           <div className="flex gap-3">
@@ -194,14 +172,14 @@ export function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: Vehicle
             />
           </div>
           {errors.telephone && (
-            <p className="font-jost font-light text-vd-caption text-[11px]">
+            <p className="font-jost font-light text-vd-caption text-cta">
               {errors.telephone}
             </p>
           )}
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="font-jost font-light text-vd-meta uppercase text-[10px] tracking-widest">
+          <label className="font-jost font-light text-vd-meta uppercase text-label tracking-widest">
             Le véhicule que vous recherchez <span className="text-vd-text">*</span>
           </label>
           <textarea
@@ -211,14 +189,14 @@ export function VehicleRequestForm({ searchQuery, onReturnToCatalogue }: Vehicle
             className="w-full border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 text-sm resize-none focus:outline-none focus:border-vd-text transition-colors duration-200"
           />
           {errors.vehicule && (
-            <p className="font-jost font-light text-vd-caption text-[11px]">
+            <p className="font-jost font-light text-vd-caption text-cta">
               {errors.vehicule}
             </p>
           )}
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="font-jost font-light text-vd-meta uppercase text-[10px] tracking-widest">
+          <label className="font-jost font-light text-vd-meta uppercase text-label tracking-widest">
             Votre budget approximatif
           </label>
           <input

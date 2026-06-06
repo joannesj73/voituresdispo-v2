@@ -24,7 +24,7 @@ export function CarCard({ car }: CarCardProps) {
         />
         <div className="absolute top-3 left-3 z-20">
           <div
-            className={`px-2 py-1 border rounded-sm font-jost uppercase font-light transition-colors duration-200 text-[9px] tracking-widest ${
+            className={`px-2 py-1 border rounded-sm font-jost uppercase font-light transition-colors duration-200 text-badge tracking-widest ${
               isSold
                 ? 'bg-vd-black text-white border-transparent'
                 : 'bg-white text-vd-black border-vd-border'
@@ -49,7 +49,7 @@ export function CarCard({ car }: CarCardProps) {
       </div>
 
       <div className="border-t border-vd-border px-5 py-4 transition-all duration-200 group-hover:translate-x-1">
-        <p className="font-jost uppercase font-light text-vd-text text-[11px] tracking-widest">
+        <p className="font-jost uppercase font-light text-vd-text text-cta tracking-widest">
           {isSold ? 'VOIR LE VÉHICULE (VENDU) →' : 'VOIR LE VÉHICULE →'}
         </p>
       </div>

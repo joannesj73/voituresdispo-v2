@@ -65,7 +65,7 @@
 
   /* Remove default focus ring, add custom subtle one */
   *:focus-visible {
-    outline: 1px solid #0A0A0A;
+    outline: 1px solid hsl(var(--foreground));
     outline-offset: 2px;
   }
 }

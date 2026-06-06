@@ -83,7 +83,7 @@ export default function VoitureDetail() {
       <section className="w-full bg-white px-5 md:px-8 lg:px-12 py-12 md:py-16 lg:py-20">
         <div className="mb-6">
           <div
-            className={`inline-block px-2 py-1 rounded-sm font-jost uppercase font-light text-[9px] tracking-widest ${
+            className={`inline-block px-2 py-1 rounded-sm font-jost uppercase font-light text-badge tracking-widest ${
               isSold
                 ? 'bg-vd-black text-white border-transparent'
                 : 'bg-white text-vd-black border border-vd-border'
@@ -94,7 +94,7 @@ export default function VoitureDetail() {
         </div>
 
         <div className="mb-8">
-          <p className="font-jost font-light text-vd-caption uppercase mb-3 text-[10px] tracking-widest">
+          <p className="font-jost font-light text-vd-caption uppercase mb-3 text-label tracking-widest">
             Véhicule
           </p>
           <h1 className="font-cormorant font-light text-vd-text text-[clamp(32px,5vw,52px)] tracking-wide">
@@ -126,7 +126,7 @@ export default function VoitureDetail() {
         <div className="border-t border-vd-border mb-8" />
 
         <div className="mb-8">
-          <p className="font-jost font-light text-vd-caption uppercase mb-6 text-[10px] tracking-widest">
+          <p className="font-jost font-light text-vd-caption uppercase mb-6 text-label tracking-widest">
             Caractéristiques
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -162,10 +162,10 @@ export default function VoitureDetail() {
         <div className="border-t border-vd-border mb-8" />
 
         <div className="mb-12">
-          <p className="font-jost font-light text-vd-caption uppercase mb-4 text-[10px] tracking-widest">
+          <p className="font-jost font-light text-vd-caption uppercase mb-4 text-label tracking-widest">
             Description
           </p>
-          <p className="font-jost font-light text-vd-meta text-[15px] leading-relaxed">
+          <p className="font-jost font-light text-vd-meta text-description leading-relaxed">
             {car.description}
           </p>
         </div>

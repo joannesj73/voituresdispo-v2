@@ -39,7 +39,7 @@ export function CountrySelector({ value, onChange }: CountrySelectorProps) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 flex-shrink-0 border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 px-1 text-sm min-w-[110px] focus:outline-none focus:border-vd-text transition-colors duration-200"
+          className="flex items-center gap-2 flex-shrink-0 border-b border-vd-border bg-transparent font-jost font-light text-vd-text py-2 px-1 text-sm min-w-country-selector focus:outline-none focus:border-vd-text transition-colors duration-200"
         >
           <img
             src={getFlagUrl(selectedCountry.code, 20)}

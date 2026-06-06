@@ -80,9 +80,20 @@ export default {
       },
       width: {
         '15': '60px',
+        'country-selector': '7rem',
+      },
+      minWidth: {
+        'country-selector': '7rem',
       },
       height: {
         '15': '60px',
+      },
+      fontSize: {
+        'badge': ['0.5625rem', { lineHeight: '1' }],
+        'cta': ['0.6875rem', { lineHeight: '1' }],
+        'label': ['0.625rem', { lineHeight: '1' }],
+        'description': ['0.9375rem', { lineHeight: '1.625' }],
+        'price-row': ['0.8125rem', { lineHeight: '1' }],
       },
       letterSpacing: {
         wide: '0.05em',
