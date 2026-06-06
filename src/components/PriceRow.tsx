@@ -10,7 +10,7 @@ export function PriceRow({ label, value, bold, divider }: PriceRowProps) {
     <div>
       <div className="flex justify-between items-center py-4">
         <span
-          className={`font-jost font-light text-vd-meta text-[13px] ${
+          className={`font-jost font-light text-vd-meta text-price-row ${
             bold ? 'uppercase tracking-widest' : ''
           }`}
         >

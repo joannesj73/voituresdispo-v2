@@ -3,6 +3,7 @@ import voitures from '../data/voitures.json';
 import { Voiture } from '../types/voiture';
 import { VehicleRequestForm } from '../components/VehicleRequestForm';
 import { CarCard } from '../components/CarCard';
+import { matchesCar } from '../utils/matchesCar';
 
 interface CatalogueProps {
   searchValue: string;
@@ -10,45 +11,6 @@ interface CatalogueProps {
 }
 
 const ALL_CARS = voitures as Voiture[];
-
-function matchesCar(car: Voiture, query: string): boolean {
-  const totalPrice = car.ownerAskingPrice + car.serviceFee;
-  const words = query.trim().split(/\s+/).filter(Boolean);
-
-  const fourDigitNums = words.filter(w => /^\d{4}$/.test(w)).map(Number);
-  if (fourDigitNums.length === 2) {
-    const [a, b] = fourDigitNums.sort((x, y) => x - y);
-    return car.year >= a && car.year <= b;
-  }
-
-  if (fourDigitNums.length === 1) {
-    return car.year === fourDigitNums[0];
-  }
-
-  return words.every(word => {
-    const lower = word.toLowerCase();
-
-    if (/^\d+$/.test(word) && Number(word) > 1000) {
-      return totalPrice <= Number(word);
-    }
-
-    const fields = [
-      car.make,
-      car.model,
-      String(car.year),
-      car.fuelType,
-      car.transmission,
-      car.motorType,
-      car.color,
-      car.mileage,
-      String(car.ownerAskingPrice),
-      String(totalPrice),
-      car.vehicleLocation,
-    ];
-
-    return fields.some(f => f.toLowerCase().includes(lower));
-  });
-}
 
 export default function Catalogue({ searchValue, onClearSearch }: CatalogueProps) {
   const filteredCars = useMemo(() => {
@@ -63,7 +25,7 @@ export default function Catalogue({ searchValue, onClearSearch }: CatalogueProps
     <main className="min-h-screen bg-white">
       <section className="w-full bg-vd-black py-20 md:py-32 lg:py-40">
         <div className="px-5 md:px-8 lg:px-12 flex flex-col items-center text-center">
-          <p className="font-jost font-light text-vd-caption uppercase text-[10px] tracking-widest anim-init animate-fade-up">
+          <p className="font-jost font-light text-vd-caption uppercase text-label tracking-widest anim-init animate-fade-up">
             Collection
           </p>
           <h1 className="font-cormorant font-light text-white mt-6 text-[clamp(48px,10vw,80px)] tracking-wide anim-init animate-fade-up">
