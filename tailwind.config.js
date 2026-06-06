@@ -78,6 +78,12 @@ export default {
         subtle: '0 2px 16px rgba(0,0,0,0.06)',
         'subtle-md': '0 4px 24px rgba(0,0,0,0.09)',
       },
+      width: {
+        '15': '60px',
+      },
+      height: {
+        '15': '60px',
+      },
       letterSpacing: {
         wide: '0.05em',
         wider: '0.1em',
