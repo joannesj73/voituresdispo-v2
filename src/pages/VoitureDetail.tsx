@@ -61,14 +61,17 @@ export default function VoitureDetail() {
   return (
     <main className="min-h-screen bg-white">
       <section className="w-full">
-        <div className="w-full bg-gray-100 aspect-video relative">
+        <div
+          className="w-full relative flex items-center justify-center"
+          style={{ backgroundColor: '#0A0A0A' }}
+        >
           {isSold && (
             <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.15)_100%)]" />
           )}
           <img
             src={mainImage}
             alt={`${car.year} ${car.make} ${car.model}`}
-            className="w-full h-full object-cover transition-opacity duration-200"
+            className="w-full object-contain transition-opacity duration-200 max-h-[60vh] md:max-h-[75vh]"
           />
         </div>
 
