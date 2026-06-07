@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import voitures from '../data/voitures.json';
 import { Voiture } from '../types/voiture';
 import Toast from '../components/Toast';
 import { PriceRow } from '../components/PriceRow';
 import { SpecCell } from '../components/SpecCell';
 import { formatPrice } from '../utils/formatPrice';
+import { supabase } from '../lib/supabase';
+import { dbToVoiture, VoitureDB } from '../types/voitureDB';
 
 export default function VoitureDetail() {
   const { id } = useParams<{ id: string }>();
@@ -14,11 +15,19 @@ export default function VoitureDetail() {
   const [copyToast, setCopyToast] = useState(false);
 
   useEffect(() => {
-    const found = (voitures as Voiture[]).find((v) => v.id === id);
-    if (found) {
-      setCar(found);
-      setMainImage(found.images[0]);
-    }
+    if (!id) return;
+    supabase
+      .from('voitures')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          const mapped = dbToVoiture(data as VoitureDB);
+          setCar(mapped);
+          setMainImage(mapped.images[0] ?? '');
+        }
+      });
   }, [id]);
 
   if (!car) {
@@ -171,12 +180,12 @@ export default function VoitureDetail() {
         </div>
 
         {isSold ? (
-          <div className="flex items-center justify-center gap-4 py-12">
-            <div className="flex-1 border-t border-vd-border" />
-            <p className="font-cormorant font-light italic text-vd-caption text-center flex-shrink-0 text-xl">
+          <div className="flex flex-col items-center text-center py-12 gap-4">
+            <div className="w-12 border-t border-vd-border" />
+            <p className="font-cormorant font-light italic text-vd-caption text-xl">
               Ce véhicule a trouvé son propriétaire.
             </p>
-            <div className="flex-1 border-t border-vd-border" />
+            <div className="w-12 border-t border-vd-border" />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
