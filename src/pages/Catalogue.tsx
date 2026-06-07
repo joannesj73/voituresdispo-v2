@@ -1,22 +1,24 @@
 import { useMemo } from 'react';
-import voitures from '../data/voitures.json';
-import { Voiture } from '../types/voiture';
 import { VehicleRequestForm } from '../components/VehicleRequestForm';
 import { CarCard } from '../components/CarCard';
 import { matchesCar } from '../utils/matchesCar';
+import { useVoitures } from '../hooks/useVoitures';
+import { dbToVoiture } from '../types/voitureDB';
 
 interface CatalogueProps {
   searchValue: string;
   onClearSearch: () => void;
 }
 
-const ALL_CARS = voitures as Voiture[];
-
 export default function Catalogue({ searchValue, onClearSearch }: CatalogueProps) {
+  const { voitures: rawVoitures, loading } = useVoitures();
+
+  const allCars = useMemo(() => rawVoitures.map(dbToVoiture), [rawVoitures]);
+
   const filteredCars = useMemo(() => {
-    if (!searchValue.trim()) return ALL_CARS;
-    return ALL_CARS.filter(car => matchesCar(car, searchValue));
-  }, [searchValue]);
+    if (!searchValue.trim()) return allCars;
+    return allCars.filter(car => matchesCar(car, searchValue));
+  }, [allCars, searchValue]);
 
   const hasQuery = searchValue.trim().length > 0;
   const hasResults = filteredCars.length > 0;
@@ -46,7 +48,11 @@ export default function Catalogue({ searchValue, onClearSearch }: CatalogueProps
         </div>
       )}
 
-      {hasQuery && !hasResults ? (
+      {loading ? (
+        <section className="w-full bg-white px-5 md:px-8 lg:px-12 py-12">
+          <p className="font-jost font-light text-vd-caption text-sm">Chargement...</p>
+        </section>
+      ) : hasQuery && !hasResults ? (
         <section className="w-full bg-white px-5 md:px-8 lg:px-12">
           <VehicleRequestForm searchQuery={searchValue} onReturnToCatalogue={onClearSearch} />
         </section>
