@@ -1,16 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 
 interface NavbarProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
+  onSearchSubmit?: (value: string) => void;
 }
 
-export default function Navbar({ searchValue, onSearchChange }: NavbarProps) {
+export default function Navbar({ searchValue, onSearchChange, onSearchSubmit }: NavbarProps) {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const mobileInputRef = useRef<HTMLInputElement>(null);
+  const desktopInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMobileSearchOpen(false);
@@ -30,6 +33,32 @@ export default function Navbar({ searchValue, onSearchChange }: NavbarProps) {
   const handleCloseMobileSearch = () => {
     setMobileSearchOpen(false);
     onSearchChange('');
+  };
+
+  const handleSearchSubmit = (value: string) => {
+    if (value.trim()) {
+      if (onSearchSubmit) {
+        onSearchSubmit(value);
+      } else {
+        navigate(`/catalogue?q=${encodeURIComponent(value.trim())}`);
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const isCatalogue = location.pathname === '/catalogue' || location.pathname === '/';
+      if (!isCatalogue && searchValue.trim()) {
+        handleSearchSubmit(searchValue);
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    const isCatalogue = location.pathname === '/catalogue' || location.pathname === '/';
+    if (!isCatalogue && searchValue.trim()) {
+      handleSearchSubmit(searchValue);
+    }
   };
 
   return (
@@ -52,10 +81,13 @@ export default function Navbar({ searchValue, onSearchChange }: NavbarProps) {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-vd-caption pointer-events-none"
               />
               <input
+                ref={desktopInputRef}
                 type="text"
                 placeholder="Rechercher par marque, modèle, année, carburant..."
                 value={searchValue}
                 onChange={e => onSearchChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
                 className="w-full pl-10 pr-9 py-2 rounded-full font-jost font-light text-sm text-white placeholder-vd-caption focus:outline-none transition-colors duration-200 bg-vd-dark-2"
               />
               {searchValue && (
@@ -94,6 +126,8 @@ export default function Navbar({ searchValue, onSearchChange }: NavbarProps) {
             type="text"
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
             placeholder="Rechercher par marque, modèle, année..."
             className="flex-1 bg-transparent font-jost font-light text-white placeholder-vd-caption focus:outline-none text-sm"
           />

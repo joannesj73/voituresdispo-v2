@@ -5,3 +5,16 @@
   padding: 0;
   text-align: left;
 }
+
+@keyframes scroll-hint-bob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.scroll-hint-bob {
+  animation: scroll-hint-bob 1.8s ease-in-out infinite;
+}
