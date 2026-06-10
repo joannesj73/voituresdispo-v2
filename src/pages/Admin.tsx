@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useVoitures, notifyVoituresChanged } from '../hooks/useVoitures';
 import { VoitureDB } from '../types/voitureDB';
 import { formatPrice } from '../utils/formatPrice';
@@ -9,12 +9,102 @@ import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 const ACTION_BTN =
   'font-jost font-light text-xs text-vd-meta hover:text-vd-text underline-offset-2 hover:underline transition-colors duration-150 cursor-pointer bg-transparent border-none p-0';
 
+const CORRECT_PASSWORD = import.meta.env.VITE_CORRECT_PASSWORD as string;
+const SESSION_KEY = 'vd_admin_auth';
+
+function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = () => {
+    if (password === CORRECT_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      onSuccess();
+    } else {
+      setError(true);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center px-5">
+      <div className="w-full max-w-[360px] flex flex-col items-center text-center">
+        <p
+          className="font-jost font-light uppercase text-[10px] tracking-[0.25em]"
+          style={{ color: '#9A9A9A' }}
+        >
+          ACCÈS RESTREINT
+        </p>
+        <h1
+          className="font-cormorant font-light mt-4"
+          style={{ fontSize: '36px', color: '#0A0A0A' }}
+        >
+          Espace Administration
+        </h1>
+        <div
+          className="w-[60px] h-px mx-auto"
+          style={{ backgroundColor: '#E0E0E0', marginTop: '24px', marginBottom: '24px' }}
+        />
+        <input
+          type="password"
+          placeholder="Mot de passe"
+          value={password}
+          onChange={e => {
+            setPassword(e.target.value);
+            setError(false);
+          }}
+          onKeyDown={handleKeyDown}
+          className="w-full font-jost font-light text-sm text-vd-text placeholder:text-vd-caption focus:outline-none focus:border-vd-text"
+          style={{
+            fontSize: '14px',
+            border: '1px solid #E0E0E0',
+            padding: '14px 16px',
+            borderRadius: '2px',
+            maxWidth: '360px',
+          }}
+        />
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-vd-black text-white font-jost uppercase font-light text-xs tracking-[0.15em] transition-colors duration-200 hover:bg-gray-800 mt-4"
+          style={{ padding: '14px', maxWidth: '360px' }}
+        >
+          ACCÉDER
+        </button>
+        {error && (
+          <p
+            className="font-jost font-light mt-3"
+            style={{ fontSize: '11px', color: '#9A9A9A' }}
+          >
+            Mot de passe incorrect.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
+  const [authenticated, setAuthenticated] = useState(false);
   const { voitures, loading } = useVoitures();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<VoitureDB | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<VoitureDB | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+      setAuthenticated(true);
+    }
+  }, []);
+
+  if (!authenticated) {
+    return <AdminLogin onSuccess={() => setAuthenticated(true)} />;
+  }
 
   const openAdd = () => {
     setEditing(null);
@@ -154,15 +244,18 @@ export default function Admin() {
             <div className="md:hidden flex flex-col gap-4">
               {voitures.map(car => (
                 <div key={car.id} className="border border-vd-border rounded-sm overflow-hidden">
-                  <div className="w-full aspect-[4/3] bg-vd-surface overflow-hidden">
+                  <div
+                    className="w-full overflow-hidden flex items-center justify-center"
+                    style={{ height: '200px', backgroundColor: '#0A0A0A' }}
+                  >
                     {car.images[0] ? (
                       <img
                         src={car.images[0]}
                         alt={`${car.make} ${car.model}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
-                      <div className="w-full h-full bg-vd-surface" />
+                      <div className="w-full h-full" style={{ backgroundColor: '#0A0A0A' }} />
                     )}
                   </div>
 
